@@ -4,7 +4,7 @@ import java.nio.file.Path
 
 import cats.effect.Blocker
 import com.truefilm.flow.decoder.FilmDecoder
-import com.truefilm.models.Film
+import com.truefilm.models.{Film, WikiFilm}
 import com.truefilm.sqldb.ClientDB.{ClientDB, ClientImp}
 import zio.{Has, IO, RIO, Task, ZIO, ZLayer}
 import fs2.data.csv._
@@ -17,6 +17,7 @@ object Stream extends StreamUtil {
 
   trait Service[R] {
     def readTopFilm(path: Path,blocker: Blocker,nTop:Int,separator: Char,chunkSize: Int = 1024 * 32): RIO[R,Map[String,Film]]
+    def findAndAggregateTopFilm(wikiPath: Path,imdbPath:Path,blocker: Blocker,nTop:Int,separator: Char,chunkSize: Int = 1024 * 32) : RIO[R,List[Film]]
   }
 
   val live: ZLayer[ClientDB, Throwable, Stream] =
@@ -31,6 +32,12 @@ object Stream extends StreamUtil {
           case Right(value) => value
         }
 
+        def completeFilm(film: Map[String,Film]) : fs2.Pipe[Task,WikiFilm,List[Film]] =
+          _.fold(film){case (film,wiki) => film.get(wiki.title) match {
+            case Some(value) => film.updated(wiki.title,value = value.copy(wikiLink = Some(wiki.url),wikiAbstract = Some(wiki.filmAbstract)))
+            case None =>film
+          }}.map(_.values.toList)
+
         def readTopFilm(path: Path,blocker: Blocker,nTop:Int,separator: Char,chunkSize: Int = 1024 * 32) : IO[Throwable,Map[String,Film]] = {
           import zio.interop.catz._
           for{
@@ -38,6 +45,16 @@ object Stream extends StreamUtil {
          topFilm <- ZIO.fromOption(stream).orElseFail(new RuntimeException("Error finding top films"))
         } yield topFilm
         }
+
+        def findAndAggregateTopFilm(wikiPath: Path,imdbPath:Path,blocker: Blocker,nTop:Int,separator: Char,chunkSize: Int = 1024 * 32) : IO[Throwable,List[Film]] = {
+          import zio.interop.catz._
+          for{
+            topFilm <- readTopFilm(imdbPath,blocker,nTop,separator,chunkSize)
+            completeTop <- streamToXMLEvents(streamFromZippedFile(wikiPath,blocker,chunkSize)).through(filterElements(List("title","url","abstract"))).through(groupElements()).through(completeFilm(topFilm)).compile.last
+            getList <- ZIO.fromOption(completeTop).orElseFail(new RuntimeException("Error finding  films metadata"))
+          } yield getList
+        }
+
       }
 
     }
