@@ -15,12 +15,12 @@ object DecoderTest extends DefaultRunnableSpec{
       for{
       x <- ZIO.fromEither(FilmDecoder(lsSucc))
       } yield {
-        assert(x.budget)(equalTo(30000000d))
-        assert(x.title)(equalTo("Toy Story"))
-        assert(x.productionCompany)(equalTo("[{'name': 'Pixar Animation Studios', 'id': 3}]"))
-        assert(x.year)(equalTo(1995))
-        assert(x.revenue)(equalTo(373554033d))
-        assert(x.rating)(equalTo(7.7d))
+        assert(x.budget)(equalTo(30000000d)) &&
+        assert(x.title)(equalTo("Toy Story")) &&
+        assert(x.productionCompany)(equalTo("[{'name': 'Pixar Animation Studios', 'id': 3}]")) &&
+        assert(x.year)(equalTo(1995)) &&
+        assert(x.revenue)(equalTo(373554033d)) &&
+        assert(x.rating)(equalTo(7.7d)) &&
         assert(x.ratio)(equalTo(30000000d/373554033d))
       }
     },
@@ -29,12 +29,12 @@ object DecoderTest extends DefaultRunnableSpec{
       for{
         x <- ZIO.fromEither(FilmDecoder(lsSucc))
       } yield {
-        assert(x.budget)(equalTo(0d))
-        assert(x.title)(equalTo(""))
-        assert(x.productionCompany)(equalTo(""))
-        assert(x.year)(equalTo(0))
-        assert(x.revenue)(equalTo(0d))
-        assert(x.rating)(equalTo(0d))
+        assert(x.budget)(equalTo(0d)) &&
+        assert(x.title)(equalTo("")) &&
+        assert(x.productionCompany)(equalTo("")) &&
+        assert(x.year)(equalTo(0)) &&
+        assert(x.revenue)(equalTo(0d)) &&
+        assert(x.rating)(equalTo(0d)) &&
         assert(x.ratio)(equalTo(0d))
       }
     },

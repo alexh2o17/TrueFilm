@@ -12,8 +12,8 @@ object ConfigurationTest  extends DefaultRunnableSpec{
         for{
         config <- configuration.load().map(_.dbConfig).provideLayer(Configuration.test)
         } yield{
-          assert(config.url)(equalTo("127.0.0.1"))
-          assert(config.user)(equalTo("test"))
+          assert(config.url)(equalTo("127.0.0.1")) &&
+          assert(config.user)(equalTo("test")) &&
           assert(config.password)(equalTo("test"))
         }
       },
@@ -21,8 +21,8 @@ object ConfigurationTest  extends DefaultRunnableSpec{
         for{
           config <- configuration.load().map(_.dbConfig).provideLayer(Configuration.live)
         } yield{
-          assert(config.url)(equalTo("127.0.0.1"))
-          assert(config.user)(equalTo("test"))
+          assert(config.url)(equalTo("127.0.0.1")) &&
+          assert(config.user)(equalTo("test")) &&
           assert(config.password)(equalTo("test"))
         }
       }

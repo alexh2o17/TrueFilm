@@ -10,6 +10,7 @@ object ClientDB {
 
 
   type ClientDB = Has[ClientDB.Service[Any]]
+  type ClientImp = ClientDB.Service[Any]
 
   trait Service[A] {
     def create(film: Film): RIO[A,Film]
