@@ -1,14 +1,12 @@
 package com.truefilm.sqldb
 
-import cats.effect.{Blocker, Resource}
+import cats.effect.Blocker
 import com.truefilm.configuration
 import com.truefilm.configuration.{Config, DbConfig}
 import doobie.Transactor
-import doobie.h2.H2Transactor
 import zio.blocking.Blocking
 import zio.{Has, Managed, Task, ZIO, ZLayer, blocking}
 import doobie._
-import doobie.implicits._
 import scala.concurrent.ExecutionContext
 
 object CustomTransactor {
