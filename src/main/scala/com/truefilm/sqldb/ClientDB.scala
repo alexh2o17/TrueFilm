@@ -34,7 +34,13 @@ object ClientDB {
 
        }
      }
+    )
 
+  val test: ZLayer[DBTransactor, Throwable, ClientDB] =
+    ZLayer.fromService[Transactor[Task],ClientDB.Service[Any]](tnx =>
+      new Service[Any]{
+        def create(film: Film): Task[Film] = Task.succeed(film)
+      }
     )
 
 

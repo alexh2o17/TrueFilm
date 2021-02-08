@@ -19,7 +19,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
   def test2Url()  = getClass.getResource("/test2.xml.gz")
   def test3Url()  = getClass.getResource("/test3.xml.gz")
 
-  val layer = (Configuration.test ++ Blocking.live) >>> CustomTransactor.transactorLive >>> ClientDB.live >>> Stream.live
+  val layer = (Configuration.test ++ Blocking.live) >>> CustomTransactor.transactorLive >>> ClientDB.test >>> Stream.live
   override def spec: ZSpec[_root_.zio.test.environment.TestEnvironment, Any] = suite("Testing Stream")(
 
     testM("Testing complete flow"){
@@ -107,6 +107,19 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       }
     },
     testM("Testing complete with toy story wiki "){
+      val blocker = Blocker.liftExecutionContext(global)
+      import zio.interop.catz._
+      for{
+        stream <- findAndAggregateTopFilm(Path.of(test3Url.toURI),Path.of(test1Url.toURI),blocker,1000,';',1024*32).provideLayer(layer)
+      } yield{
+        assert(stream.size)(equalTo(2)) &&
+          assert(stream.head.wikiAbstract)(isSome) &&
+          assert(stream.head.wikiLink)(isSome) &&
+          assert(stream.last.wikiAbstract)(isNone) &&
+          assert(stream.last.wikiLink)(isNone)
+      }
+    },
+    testM("Testing complete with insert and toy story wiki "){
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
