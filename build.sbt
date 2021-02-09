@@ -18,7 +18,9 @@ libraryDependencies ++= Seq(
   "dev.zio"          %% "zio-interop-cats" % ZIOInterop,
   "dev.zio"          %% "zio-test"         % ZIOVersion % "test",
   "dev.zio"          %% "zio-test-sbt"     % ZIOVersion % "test",
-  "com.nrinaudo" %% "kantan.csv" % "0.6.1",
+  "com.scalawilliam" %% "xs4s-core" % "0.8.2",
+  "com.scalawilliam" %% "xs4s-fs2" % "0.8.2",
+  "com.scalawilliam" %% "xs4s-zio" % "0.8.2",
   // Circe
   "io.circe" %% "circe-generic"        % CirceVersion,
   "io.circe" %% "circe-generic-extras" % CirceVersion,
@@ -33,6 +35,7 @@ libraryDependencies ++= Seq(
   "co.fs2" %% "fs2-io" % "2.4.4",
   "org.gnieh" %% "fs2-data-csv" % "0.9.0",
   "org.gnieh" %% "fs2-data-xml" % "0.9.0",
+
 
 //pure config
   "com.github.pureconfig" %% "pureconfig" % PureConfigVersion,
@@ -49,3 +52,4 @@ scalacOptions ++= Seq(
 )
 
 testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
+resourceDirectory in Compile := baseDirectory.value /"./src/main/resources"

@@ -1,9 +1,9 @@
 package com.truefilm
 
 
-import java.nio.file.Path
+import java.nio.file.{Path, Paths}
 
-import cats.effect.Blocker
+import cats.effect.{Blocker, ConcurrentEffect}
 import com.truefilm.configuration.Configuration
 import com.truefilm.sqldb.{ClientDB, CustomTransactor}
 import zio.test.{DefaultRunnableSpec, suite, testM, _}
@@ -15,32 +15,31 @@ import zio.blocking.Blocking
 import scala.concurrent.ExecutionContext.global
 import scala.io.Source
 object StreamTest extends DefaultRunnableSpec with StreamUtil {
-  def test1Url()  = getClass.getResource("/test1.csv.gz")
-  def test2Url()  = getClass.getResource("/test2.xml.gz")
-  def test3Url()  = getClass.getResource("/test3.xml.gz")
+  def test1Url  = Paths.get(getClass.getResource("/test1.csv.gz").getPath)
+  def test2Url  = Paths.get(getClass.getResource("/test2.xml.gz").getPath)
+  def test3Url  = Paths.get(getClass.getResource("/test3.xml.gz").getPath)
 
   val layer = (Configuration.test ++ Blocking.live) >>> CustomTransactor.transactorLive >>> ClientDB.test >>> Stream.live
   override def spec: ZSpec[_root_.zio.test.environment.TestEnvironment, Any] = suite("Testing Stream")(
 
     testM("Testing complete flow"){
       val blocker = Blocker.liftExecutionContext(global)
-
       for{
-      stream <- readTopFilm(Path.of(test1Url.toURI),blocker,1000,';').provideLayer(layer)
+      stream <- readTopFilm(test1Url,blocker,1000,';').provideLayer(layer)
       } yield{
         assert(stream.nonEmpty)(isTrue) &&
         assert(stream.size)(equalTo(2)) &&
-        assert(stream.head._1)(equalTo("Toy Story")) &&
-        assert(stream.last._1)(equalTo("Jumanji"))
+        assert(stream.head._1)(equalTo("Toy Story".toUpperCase)) &&
+        assert(stream.last._1)(equalTo("Jumanji".toUpperCase))
       }
     },
     testM("Testing complete flow with 1 top"){
       val blocker = Blocker.liftExecutionContext(global)
       for{
-        stream <- readTopFilm(Path.of(test1Url.toURI),blocker,1,';').provideLayer(layer)
+        stream <- readTopFilm(test1Url,blocker,1,';').provideLayer(layer)
       } yield{
         assert(stream.nonEmpty)(isTrue) &&
-        assert(stream.head._1)(equalTo("Jumanji")) &&
+        assert(stream.head._1)(equalTo("Jumanji".toUpperCase)) &&
         assert(stream.size)(equalTo(1))
 
       }
@@ -49,7 +48,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamFromZippedFile(Path.of(test1Url.toURI),blocker,1024*32).compile.toList
+        stream <- streamFromZippedFile(test1Url,blocker,1024*32).compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue)
       }
@@ -58,7 +57,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToRow(streamFromZippedFile(Path.of(test1Url.toURI),blocker,1024*32),separator = ';').compile.toList
+          stream <- streamToRow(streamFromZippedFile(test1Url,blocker,1024*32),separator = ';').compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue) &&
         assert(stream.size)(equalTo(2))
@@ -68,7 +67,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToXMLEvents(streamFromZippedFile(Path.of(test2Url.toURI),blocker,1024*32)).compile.toList
+        stream <- streamToXMLEvents(streamFromZippedFile(test2Url,blocker,1024*32)).compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue)
       }
@@ -77,7 +76,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToXMLEvents(streamFromZippedFile(Path.of(test2Url.toURI),blocker,1024*32)).through(filterElements(List("title","url","abstract"))).compile.toList
+        stream <- streamToXMLEvents(streamFromZippedFile(test2Url,blocker,1024*32)).through(filterElements(List("title","url","abstract"))).compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue)
         assert(stream.size)(equalTo(95))
@@ -87,7 +86,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToXMLEvents(streamFromZippedFile(Path.of(test2Url.toURI),blocker,1024*32)).through(filterElements(List("title","url","abstract"))).through(groupElements()).compile.toList
+        stream <- streamToXMLEvents(streamFromZippedFile(test2Url,blocker,1024*32)).through(filterElements(List("title","url","abstract"))).through(groupElements).compile.toList
       } yield{
         assert(stream.size)(equalTo(1))
       }
@@ -96,7 +95,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- findAndAggregateTopFilm(Path.of(test2Url.toURI),Path.of(test1Url.toURI),blocker,1000,';',1024*32).provideLayer(layer)
+        stream <- findAndAggregateTopFilm(test2Url,test1Url,blocker,1000,';',1024*32).provideLayer(layer)
         x = println(stream)
       } yield{
         assert(stream.size)(equalTo(2)) &&
@@ -110,7 +109,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- findAndAggregateTopFilm(Path.of(test3Url.toURI),Path.of(test1Url.toURI),blocker,1000,';',1024*32).provideLayer(layer)
+        stream <- findAndAggregateTopFilm(test3Url,test1Url,blocker,1000,';',1024*32).provideLayer(layer)
       } yield{
         assert(stream.size)(equalTo(2)) &&
           assert(stream.head.wikiAbstract)(isSome) &&
@@ -123,7 +122,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- findAndAggregateTopFilm(Path.of(test3Url.toURI),Path.of(test1Url.toURI),blocker,1000,';',1024*32).provideLayer(layer)
+        stream <- findAndAggregateTopFilm(test3Url,test1Url,blocker,1000,';',1024*32).provideLayer(layer)
       } yield{
         assert(stream.size)(equalTo(2)) &&
           assert(stream.head.wikiAbstract)(isSome) &&

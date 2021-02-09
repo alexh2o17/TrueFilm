@@ -12,8 +12,10 @@ object WikiFilm extends LazyLogging {
   }
 
   def fromMapToWiki(entry: Map[String,String]) : WikiFilm ={
-    WikiFilm(title = getEntry(entry,"title"),url =getEntry(entry,"url"),filmAbstract= getEntry(entry,"abstract"))
+    WikiFilm(title = cleanTitle(getEntry(entry,"title")).toUpperCase,url =getEntry(entry,"url"),filmAbstract= getEntry(entry,"abstract"))
   }
 
-  def getEntry(entry: Map[String,String], value: String) : String = entry.getOrElse(value, {logger.warn(s"No $value founded");""})
+  def cleanTitle(string: String) : String = string.replace("Wikipedia: ","").replaceAll("\\(.*\\)", "").replaceAll("^\\s+", "").replaceAll("\\s+$", "")
+
+  def getEntry(entry: Map[String,String], value: String) : String = entry.getOrElse(value, {logger.warn(s"No $value founded in list ${entry}");""})
 }

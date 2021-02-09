@@ -20,10 +20,16 @@ object FilmDecoder extends RowDecoder[Film] {
       val cellList = cells.toList
       for {
         budget <- if(cellList(BUDGET_CELL).isEmpty) Right(0d) else CellDecoder[Int].apply(cellList(BUDGET_CELL)).map(x => x.toDouble)
-        originalTitle <- CellDecoder[String].apply(cellList(TITLE_CELL))
-        productionCompany <- CellDecoder[String].apply(cellList(PROD_CELL))
+        originalTitle <- CellDecoder[String].apply(cellList(TITLE_CELL)) match {
+          case Left(value) => Left(new DecoderError(s"Invalid value for Title: ${cellList(TITLE_CELL)}"))
+          case Right(value) =>Right(value = value.replaceAll("\\(.*\\)", "").replaceAll("^\\s+", "").replaceAll("\\s+$", ""))
+        }
+        productionCompany <- CellDecoder[String].apply(cellList(PROD_CELL)) match {
+          case Left(value) => Left(new DecoderError(s"Invalid value for Company: ${cellList(TITLE_CELL)}"))
+          case Right(value) =>Right(value = value)
+        }
         year <- cellList(YEAR_CELL).split("/").lastOption match {
-          case Some(value) => Right(if(value.isEmpty) 0 else value.toInt)
+          case Some(value) => Right(if(value.isEmpty) 0 else if(value forall(_.isDigit)) value.toInt else 0)
           case None => Right(0)
         }
         revenue <- if(cellList(REVENUE_CELL).isEmpty) Right(0d) else CellDecoder[Int].apply(cellList(REVENUE_CELL)).map(x => x.toDouble)

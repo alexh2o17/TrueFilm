@@ -35,16 +35,22 @@ object Stream extends StreamUtil with LazyLogging{
         }
 
         def completeFilm(film: Map[String,Film]) : fs2.Pipe[Task,WikiFilm,List[Film]] =
-          _.fold(film){case (film,wiki) => film.get(wiki.title) match {
-            case Some(value) => film.updated(wiki.title,value = value.copy(wikiLink = Some(wiki.url),wikiAbstract = Some(wiki.filmAbstract)))
+//          _.chunkN(1000).fold(film){case (topFilm,wikiLs) => wikiLs.foldLeft(topFilm){case (film,wiki) => film.get(wiki.title.toUpperCase) match {
+//            case Some(value) => film.updated(wiki.title.toUpperCase,value = value.copy(wikiLink = Some(wiki.url),wikiAbstract = Some(wiki.filmAbstract)))
+//            case None =>film
+//          }}}.map(_.values.toList)
+          _.fold(film){case (film,wiki) => film.get(wiki.title.toUpperCase) match {
+            case Some(value) => film.updated(wiki.title.toUpperCase,value = value.copy(wikiLink = Some(wiki.url),wikiAbstract = Some(wiki.filmAbstract)))
             case None =>film
           }}.map(_.values.toList)
 
         def readTopFilm(path: Path,blocker: Blocker,nTop:Int,separator: Char,chunkSize: Int = 1024 * 32) : IO[Throwable,Map[String,Film]] = {
           import zio.interop.catz._
+          logger.info(s"Defining Top $nTop")
           for{
          stream <- streamFromFileToRow(path,blocker,separator,chunkSize).through(decodeToFilm()).through(accumulateTop(nTop)).compile.last
          topFilm <- ZIO.fromOption(stream).orElseFail(new RuntimeException("Error finding top films"))
+          _ = logger.info(s"Defined Top. We find ${topFilm.size} correct elements ")
         } yield topFilm
         }
 
@@ -52,16 +58,19 @@ object Stream extends StreamUtil with LazyLogging{
           import zio.interop.catz._
           for{
             topFilm <- readTopFilm(imdbPath,blocker,nTop,separator,chunkSize)
-            completeTop <- streamToXMLEvents(streamFromZippedFile(wikiPath,blocker,chunkSize)).through(filterElements(List("title","url","abstract"))).through(groupElements()).through(completeFilm(topFilm)).compile.last
+            _ = logger.info(s"Starting to read wikipedia metadata")
+            completeTop <- streamToXMLEvents(streamFromZippedFile(wikiPath,blocker,chunkSize)).through(filterElements(List("title","url","abstract"))).through(groupElements).through(completeFilm(topFilm)).compile.last
             getList <- ZIO.fromOption(completeTop).orElseFail(new RuntimeException("Error finding  films metadata"))
+            _ = logger.info(s"Metadata added to films")
           } yield getList
         }
 
         def findAndDBinsert(wikiPath: Path,imdbPath:Path,blocker: Blocker,nTop:Int,separator: Char,chunkSize: Int = 1024 * 32) : IO[Throwable,Int] = {
-          import zio.interop.catz._
           for{
             topFilm <- findAndAggregateTopFilm(wikiPath, imdbPath, blocker, nTop, separator, chunkSize)
+            _ = logger.info(s"Start to insert ${topFilm.size} films in DB")
             inserted <- ZIO.foreach(topFilm)(cli.create)
+            _ = logger.info(s"Insert in DB completed")
           } yield inserted.size
         }
 

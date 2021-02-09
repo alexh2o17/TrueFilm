@@ -30,7 +30,7 @@ object ClientDB {
        object SQL {
 
          def create(film: Film): Update0 =
-           sql"""INSERT INTO TOP_FILM (title) VALUES (${film.title})""".update
+           sql"""INSERT INTO public.top_film (title, budget, "year", revenue, rating, productioncompany, wikilink, wikiabstract, ratio) VALUES (${film.title},${film.budget},${film.year},${film.revenue},${film.rating},${film.productionCompany},${film.wikiLink},${film.wikiAbstract},${film.ratio})""".stripMargin.update
 
        }
      }
