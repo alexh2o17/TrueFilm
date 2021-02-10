@@ -57,7 +57,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-          stream <- streamToRow(streamFromZippedFile(test1Url,blocker,1024*32),separator = ';').compile.toList
+          stream <- streamFromZippedFile(test1Url,blocker,1024*32).through(streamToRow(separator = ';')).compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue) &&
         assert(stream.size)(equalTo(2))
@@ -67,7 +67,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToXMLEvents(streamFromZippedFile(test2Url,blocker,1024*32)).compile.toList
+        stream <- streamFromZippedFile(test2Url,blocker,1024*32).through(streamToXMLEvents).compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue)
       }
@@ -76,7 +76,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToXMLEvents(streamFromZippedFile(test2Url,blocker,1024*32)).through(filterElements(List("title","url","abstract"))).compile.toList
+        stream <- streamFromZippedFile(test2Url,blocker,1024*32).through(streamToXMLEvents).through(filterElements(List("title","url","abstract"))).compile.toList
       } yield{
         assert(stream.nonEmpty)(isTrue)
         assert(stream.size)(equalTo(95))
@@ -86,7 +86,7 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
       val blocker = Blocker.liftExecutionContext(global)
       import zio.interop.catz._
       for{
-        stream <- streamToXMLEvents(streamFromZippedFile(test2Url,blocker,1024*32)).through(filterElements(List("title","url","abstract"))).through(groupElements).compile.toList
+        stream <- streamFromZippedFile(test2Url,blocker,1024*32).through(streamToXMLEvents).through(filterElements(List("title","url","abstract"))).through(groupElements).compile.toList
       } yield{
         assert(stream.size)(equalTo(1))
       }

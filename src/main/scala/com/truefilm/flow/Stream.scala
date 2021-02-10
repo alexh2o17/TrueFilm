@@ -59,7 +59,7 @@ object Stream extends StreamUtil with LazyLogging{
           for{
             topFilm <- readTopFilm(imdbPath,blocker,nTop,separator,chunkSize)
             _ = logger.info(s"Starting to read wikipedia metadata")
-            completeTop <- streamToXMLEvents(streamFromZippedFile(wikiPath,blocker,chunkSize)).through(filterElements(List("title","url","abstract"))).through(groupElements).through(completeFilm(topFilm)).compile.last
+            completeTop <- streamFromZippedFile(wikiPath,blocker,chunkSize).through(streamToXMLEvents).through(filterElements(List("title","url","abstract"))).through(groupElements).through(completeFilm(topFilm)).compile.last
             getList <- ZIO.fromOption(completeTop).orElseFail(new RuntimeException("Error finding  films metadata"))
             _ = logger.info(s"Metadata added to films")
           } yield getList
