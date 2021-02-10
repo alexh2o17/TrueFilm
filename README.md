@@ -26,21 +26,21 @@ Resulting data are saved in Postgres, so they can be visible through SQL.
 
 To clone and run this application, you'll need [Git](https://git-scm.com), [sbt](http://www.scala-sbt.org/) or at least docker with docker-compose (https://www.docker.com/)  installed on your computer. When you installed these software you can start to process data:
 
-### 1) Start Postgres
+#### 1) Start Postgres
 Start Postgres Database that will contain data and the tool to make query on Database: PgAmdin
 
 ```shell script
 # start database
 $ ./script-run startdb
 ```
-### 2) Download files
+#### 2) Download files
 Before data processing starts we need to download files
 ```shell script
 # Download_file
 $ ./script-run downloads_files
 ```
 
-### 3) Start processing
+#### 3) Start processing
 Start the data process. If you have installed sbt you can simple use
 ```shell script
 # Check if file exists and start processing
@@ -52,7 +52,7 @@ If you don't have sbt, you can use the docker version of the program. This versi
 $ ./script-run process_docker
 ```
 
-### 4) Navigate on Data
+#### 4) Navigate on Data
 You can analize your results througt PgAdmin on http://localhost:5050.
 To access to PgAdmin you have to use the default credentials:
 * **PgAdmin:** http://localhost:5050
@@ -66,7 +66,7 @@ Here are the connection details:
 * **username:** postgres
 * **password:** changeme
 
-### 5) Other
+#### 5) Other
 You can also thes this program with:
 ```shell script
 # Test program with sbt
