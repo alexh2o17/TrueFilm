@@ -87,5 +87,6 @@ $ ./script-run stopdb
 - [Scala](https://www.scala-lang.org/) - Scala combines object-oriented and functional programming in one concise, high-level language.
 - [FS2](https://fs2.io/#/) - Functional, effectful, concurrent streams for Scala.
 - [ZIO](https://zio.dev/) - Type-safe, composable asynchronous and concurrent programming for Scala.
+- [doobie](https://tpolecat.github.io/doobie/) - doobie is a pure functional JDBC layer for Scala and Cats.
 
-I choose Scala because I think is one of the best language to interact with Data. I choose ZIO and fs2, cause allow to write functional, test and preserve computational resource in a simple way. Moreover, today there few example on git with these tools, so I thought I’d make my own contribution
+I choose Scala because I think is one of the best language to interact with Data. I choose ZIO, fs2 and doobie, cause allow to write functional, test and preserve computational resource in a simple way. Moreover, today there few example on git with these tools, so I thought I’d make my own contribution
