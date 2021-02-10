@@ -10,6 +10,7 @@ object FilmDecoder extends RowDecoder[Film] {
   val BUDGET_CELL= 2
   val TITLE_CELL = 8
   val PROD_CELL =12
+  val GENRES_CELL =3
   val YEAR_CELL = 14
   val REVENUE_CELL = 15
   val RATING_CELL = 22
@@ -24,8 +25,12 @@ object FilmDecoder extends RowDecoder[Film] {
           case Left(value) => Left(new DecoderError(s"Invalid value for Title: ${cellList(TITLE_CELL)}"))
           case Right(value) =>Right(value = value.replaceAll("\\(.*\\)", "").replaceAll("^\\s+", "").replaceAll("\\s+$", ""))
         }
+        genres <- CellDecoder[String].apply(cellList(GENRES_CELL)) match {
+          case Left(value) => Left(new DecoderError(s"Invalid value for Genres: ${cellList(GENRES_CELL)}"))
+          case Right(value) =>Right(value = value)
+        }
         productionCompany <- CellDecoder[String].apply(cellList(PROD_CELL)) match {
-          case Left(value) => Left(new DecoderError(s"Invalid value for Company: ${cellList(TITLE_CELL)}"))
+          case Left(value) => Left(new DecoderError(s"Invalid value for Company: ${cellList(PROD_CELL)}"))
           case Right(value) =>Right(value = value)
         }
         year <- cellList(YEAR_CELL).split("/").lastOption match {
@@ -34,6 +39,6 @@ object FilmDecoder extends RowDecoder[Film] {
         }
         revenue <- if(cellList(REVENUE_CELL).isEmpty) Right(0d) else CellDecoder[Int].apply(cellList(REVENUE_CELL)).map(x => x.toDouble)
         rating <- if(cellList(RATING_CELL).isEmpty) Right(0d) else CellDecoder[Double].apply(cellList(RATING_CELL))
-      } yield Film(originalTitle,budget,year,revenue,rating,productionCompany)
+      } yield Film(originalTitle,budget,year,revenue,rating,productionCompany,genres)
     }
 }
