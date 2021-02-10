@@ -1,19 +1,17 @@
 package com.truefilm
 
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.Paths
 
-import cats.effect.{Blocker, ConcurrentEffect}
+import cats.effect.Blocker
 import com.truefilm.configuration.Configuration
 import com.truefilm.sqldb.{ClientDB, CustomTransactor}
 import zio.test.{DefaultRunnableSpec, suite, testM, _}
 import zio.test.Assertion._
 import flow._
-import zio._
 import zio.blocking.Blocking
 
 import scala.concurrent.ExecutionContext.global
-import scala.io.Source
 object StreamTest extends DefaultRunnableSpec with StreamUtil {
   def test1Url  = Paths.get(getClass.getResource("/test1.csv.gz").getPath)
   def test2Url  = Paths.get(getClass.getResource("/test2.xml.gz").getPath)
@@ -93,10 +91,8 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
     },
     testM("Testing complete without wiki"){
       val blocker = Blocker.liftExecutionContext(global)
-      import zio.interop.catz._
       for{
         stream <- findAndAggregateTopFilm(test2Url,test1Url,blocker,1000,';',1024*32).provideLayer(layer)
-        x = println(stream)
       } yield{
         assert(stream.size)(equalTo(2)) &&
         assert(stream.head.wikiAbstract)(isNone) &&
@@ -107,7 +103,6 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
     },
     testM("Testing complete with toy story wiki "){
       val blocker = Blocker.liftExecutionContext(global)
-      import zio.interop.catz._
       for{
         stream <- findAndAggregateTopFilm(test3Url,test1Url,blocker,1000,';',1024*32).provideLayer(layer)
       } yield{
@@ -120,7 +115,6 @@ object StreamTest extends DefaultRunnableSpec with StreamUtil {
     },
     testM("Testing complete with insert and toy story wiki "){
       val blocker = Blocker.liftExecutionContext(global)
-      import zio.interop.catz._
       for{
         stream <- findAndAggregateTopFilm(test3Url,test1Url,blocker,1000,';',1024*32).provideLayer(layer)
       } yield{
