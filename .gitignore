@@ -4,5 +4,6 @@ project/target/*
 target/*
 nohup.out
 project/project/
-metadata.csv.gz
+input/metadata.csv.gz
 wiki.xml.gz
+/input/

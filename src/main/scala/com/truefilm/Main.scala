@@ -18,8 +18,8 @@ import scala.concurrent.ExecutionContext.global
 object Main extends App with LazyLogging{
 
   def getPath(wiki:String,meta:String) : IO[Throwable,(Path,Path)] = for{
-    wikiPath <- ZIO.effect(Paths.get("src/main/resources" ++ wiki)).foldM(_ => ZIO.fail(new RuntimeException(s"${wiki} not found in Resources")), x => ZIO.succeed(x))
-    metaPath <- ZIO.effect(Paths.get("src/main/resources" ++meta)).foldM(_ => ZIO.fail(new RuntimeException(s"${meta} not found in Resources")), x => ZIO.succeed(x))
+    wikiPath <- ZIO.effect(Paths.get(wiki)).foldM(_ => ZIO.fail(new RuntimeException(s"${wiki} not found in Resources")), x => ZIO.succeed(x))
+    metaPath <- ZIO.effect(Paths.get( meta)).foldM(_ => ZIO.fail(new RuntimeException(s"${meta} not found in Resources")), x => ZIO.succeed(x))
   } yield wikiPath -> metaPath
 
   override def run(args: List[String]): URIO[ZEnv, zio.ExitCode] = {
@@ -28,7 +28,7 @@ object Main extends App with LazyLogging{
         _ = logger.info(s"Starting process data on ${startDate}")
         configurationLayer = Configuration.live ++ Blocking.live
         fullLayer = configurationLayer >>> CustomTransactor.transactorLive >>> ClientDB.live >>> Stream.live
-        (wikiPath, metaPath) <- getPath("/wiki.xml.gz","/metadata.csv.gz")
+        (wikiPath, metaPath) <- getPath("input/wiki.xml.gz", "input/metadata.csv.gz")
         blocker = Blocker.liftExecutionContext(global)
         program <- findAndDBinsert(wikiPath,metaPath,blocker,1000,';').provideLayer(fullLayer)
         endDate <- ZIO.succeed(new Date())

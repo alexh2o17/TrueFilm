@@ -1,19 +1,16 @@
 package com.truefilm.flow
 
-import cats.effect.{Blocker, ConcurrentEffect}
-import zio.{Task, ZIO}
+import cats.effect.Blocker
+import zio.Task
 import java.nio.file.Path
 
 import cats.data.NonEmptyList
 import com.truefilm.models.{Film, WikiFilm}
 import com.typesafe.scalalogging.LazyLogging
-import fs2.data.csv.internals.RowParser
-import fs2.{Chunk, Pipe, RaiseThrowable}
-import fs2.data.csv.{QuoteHandling, Row, noHeaders, rows, skipHeaders}
-import fs2.data.xml.{XmlEvent, events, namespaceResolver, normalize, referenceResolver, xmlEntities}
+import fs2.Chunk
+import fs2.data.csv.{Row, noHeaders,skipHeaders}
+import fs2.data.xml.{XmlEvent, events}
 import zio.interop.catz._
-
-import scala.util.{Failure, Success, Try}
 
 trait StreamUtil extends LazyLogging{
 

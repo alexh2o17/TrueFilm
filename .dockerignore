@@ -1,4 +1,5 @@
-project/target
 target
 .idea
 .bsp
+/input/
+.git
