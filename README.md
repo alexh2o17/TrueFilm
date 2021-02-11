@@ -36,7 +36,7 @@ $ ./script-run startdb
 Before data processing starts we need to download files
 ```shell script
 # Download_file
-$ ./script-run downloads_files
+$ ./script-run download_files
 ```
 Or download manually and put in ./input folder:
 * https://www.dropbox.com/s/0rsg6kag7u3oypx/wiki.xml.gz?dl=1
