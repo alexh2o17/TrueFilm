@@ -25,6 +25,12 @@ Resulting data are saved in Postgres, so they can be visible through SQL.
 
 To clone and run this application, you'll need [Git](https://git-scm.com), [wget](https://www.gnu.org/software/wget/), [sbt](http://www.scala-sbt.org/) or at least [Docker](https://www.docker.com/) with docker-compose (https://www.docker.com/)  installed on your computer. When you installed these software you can start to process data:
 
+#### 1) Clone repo
+Use git to clone this repo. Please remember that all files needs to be in a folder named "truefilm" (case insensitive)
+```shell script
+# Clone repo
+$ git clone git@github.com:alexh2o17/TrueFilm.git
+```
 #### 1) Start Postgres
 Start Postgres Database that will contain data and the tool to make query on Database: PgAmdin
 
