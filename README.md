@@ -95,3 +95,56 @@ $ ./script-run stopdb
 I choose Scala because I think is one of the best language to interact with Data. I choose ZIO, fs2 and doobie, cause allow to write functional, test and preserve computational resource in a simple way. Moreover, today there few example on git with these tools, so I thought I’d make my own contribution
 
 ## Solution Overview
+
+To complete this challenge I decided to have a streaming approach. All data is in streamed. This type of approach has several advantages, including not loading all the data in memory. This therefore allows to consume very few resources even with a large amount of data.
+
+The two files are processed sequentially. We can therefore divide the processing into three phases:
+1) Find Top 1000 Movies with the highest ratio of Budget to Revenue
+2) Aggregate information
+3) Save Results
+
+In the first step, the **metadata.csv.gz** file containing the movie metadata is processed.
+Field taken in consideration are:
+* Original Title
+* Genres
+* Budget
+* Revenue
+* Production Companies
+* Rating
+* Release Date
+
+In this phase the first 1000 movies are defined according to the ratio. Before that, the data is cleaned up:
+* Movies without one the above field NULL are ignored
+* Movies with Budget or Revenue equal to 0 are ignored
+* Movies with empty title are ignored
+* All title are cleaned removing brackets and text in brackets
+* All title are cleaned removing right and left whitespaces
+
+The output of this phase is a list of the 1000 movies with the highest ratio of Budget to Revenue.
+
+In the second step, information about the Wikipedia url and the Wikipedia abstract are added to the 1000 movies with higher ratio. 
+Data are read from the **wiki.xml.gz file**. Field taken in consideration for each XML documents are:
+* Title
+* Url
+* Abstract
+
+A join is made on the "title" field to allow the aggregation of the data.
+Before the join, the data is cleaned up:
+* All title field are cleaned removing brackets and text in brackets
+* All title are cleaned removing right and left whitespaces
+* All title field are cleaned removing text: "Wikipedia: "
+
+The output of this phase is a list of 1000 movies with ratios with the same information as in phase 1 plus the url and the abstract from wikipedia.
+Data model of each film metadata is composed by:
+* Original Title
+* Genres
+* Budget
+* Revenue
+* Production Companies
+* Rating
+* Year
+* Ratio
+* WikiLink
+* WikiAbstract
+
+In the third step, Top 1000 Movies are saved on postgres DB in **TOPFILM** table.
