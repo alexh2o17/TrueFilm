@@ -10,7 +10,6 @@ val ZIOVersion        = "1.0.4"
 val PureConfigVersion = "0.14.0"
 val ZIOInterop        = "2.2.0.1"
 
-
 libraryDependencies ++= Seq(
   // ZIO
   "dev.zio"          %% "zio"              % ZIOVersion,
@@ -18,9 +17,6 @@ libraryDependencies ++= Seq(
   "dev.zio"          %% "zio-interop-cats" % ZIOInterop,
   "dev.zio"          %% "zio-test"         % ZIOVersion % "test",
   "dev.zio"          %% "zio-test-sbt"     % ZIOVersion % "test",
-  "com.scalawilliam" %% "xs4s-core" % "0.8.2",
-  "com.scalawilliam" %% "xs4s-fs2" % "0.8.2",
-  "com.scalawilliam" %% "xs4s-zio" % "0.8.2",
   // Circe
   "io.circe" %% "circe-generic"        % CirceVersion,
   "io.circe" %% "circe-generic-extras" % CirceVersion,
@@ -35,7 +31,6 @@ libraryDependencies ++= Seq(
   "co.fs2" %% "fs2-io" % "2.4.4",
   "org.gnieh" %% "fs2-data-csv" % "0.9.0",
   "org.gnieh" %% "fs2-data-xml" % "0.9.0",
-
 
 //pure config
   "com.github.pureconfig" %% "pureconfig" % PureConfigVersion,
