@@ -7,8 +7,7 @@
 - [Features](#features)
 - [How To Use](#how-to-use)
 - [Built with](#built-with)
-- [Built with](#built-with)
-- [License](#license)
+- [Solution Overview](#solution-overview)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -39,6 +38,10 @@ Before data processing starts we need to download files
 # Download_file
 $ ./script-run downloads_files
 ```
+Or download manually and put in ./input folder:
+* https://www.dropbox.com/s/0rsg6kag7u3oypx/wiki.xml.gz?dl=1
+* https://www.dropbox.com/s/xkcgowtzd0eo9mj/metadata.csv.gz?dl=1
+
 
 #### 3) Start processing
 Start the data process. If you have installed sbt you can simple use
@@ -90,3 +93,5 @@ $ ./script-run stopdb
 - [doobie](https://tpolecat.github.io/doobie/) - doobie is a pure functional JDBC layer for Scala and Cats.
 
 I choose Scala because I think is one of the best language to interact with Data. I choose ZIO, fs2 and doobie, cause allow to write functional, test and preserve computational resource in a simple way. Moreover, today there few example on git with these tools, so I thought I’d make my own contribution
+
+## Solution Overview
