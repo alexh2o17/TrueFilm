@@ -30,7 +30,7 @@ Start Postgres Database that will contain data and the tool to make query on Dat
 
 ```shell script
 # start database
-$ ./script-run startdb
+$ ./script-run.sh startdb
 ```
 #### 2) Download files
 Before data processing starts we need to download files
@@ -47,12 +47,12 @@ Or download manually and put in ./input folder:
 Start the data process. If you have installed sbt you can simple use
 ```shell script
 # Check if file exists and start processing
-$ ./script-run process
+$ ./script-run.sh process
 ```
 If you don't have sbt, you can use the docker version of the program. This version in slower than starting with sbt.
 ```shell script
 # Create image if not exist,check if file exist and start processing
-$ ./script-run process_docker
+$ ./script-run.sh process_docker
 ```
 
 #### 4) Navigate on Data
@@ -73,16 +73,16 @@ Here are the connection details:
 You can also thes this program with:
 ```shell script
 # Test program with sbt
-$ ./script-run test
+$ ./script-run.sh test
 
 # Test program with Docker
-$ ./script-run test_with_docker
+$ ./script-run.sh test_with_docker
 ```
 
 Or **stop database** with:
 ```shell script
 # Stop Postgres and PgAmin containers and delete all data
-$ ./script-run stopdb
+$ ./script-run.sh stopdb
 ```
 
 ## Built with 
