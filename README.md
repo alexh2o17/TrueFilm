@@ -35,7 +35,7 @@ $ git clone git@github.com:alexh2o17/TrueFilm.git
 Start Postgres Database that will contain data and the tool to make query on Database: PgAmdin
 
 ```shell script
-# start database
+# Start database
 $ ./script-run.sh startdb
 ```
 #### 2) Download files
