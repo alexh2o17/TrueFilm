@@ -18,7 +18,7 @@ The aim of the project is to connect to data source containing:
 * **metadata.csv.gz:** metadata about movies, taken from IMDB.com 
 * **wiki.xml.gz:** information about movies, taken from WIKIPEDIA
 
-to allow consumers to find top perfoming film (with highest rateo).
+to allow consumers to find top perfoming film (with highest ratio of budget to revenue).
 Resulting data are saved in Postgres, so they can be visible through SQL.
 
 ## How To Use
@@ -92,7 +92,7 @@ $ ./script-run stopdb
 - [ZIO](https://zio.dev/) - Type-safe, composable asynchronous and concurrent programming for Scala.
 - [doobie](https://tpolecat.github.io/doobie/) - doobie is a pure functional JDBC layer for Scala and Cats.
 
-I choose Scala because I think is one of the best language to interact with Data. I choose ZIO, fs2 and doobie, cause allow to write functional, test and preserve computational resource in a simple way. Moreover, today there few example on git with these tools, so I thought I’d make my own contribution
+I choose Scala because I think is one of the best language to interact with Data. I choose ZIO, fs2 and doobie, cause allow to write functional, test and preserve computational resource in a simple way. Moreover, today there few example on git with these tools, so I thought I’d make my own contribution.
 
 ## Solution Overview
 
@@ -113,7 +113,7 @@ Field taken in consideration are:
 * Rating
 * Release Date
 
-In this phase the first 1000 movies are defined according to the ratio. Before that, the data is cleaned up:
+In this phase the first 1000 movies are defined according to the ratio of Budget to Revenue. Before that, the data is cleaned up:
 * Movies without one the above field NULL are ignored
 * Movies with Budget or Revenue equal to 0 are ignored
 * Movies with empty title are ignored
