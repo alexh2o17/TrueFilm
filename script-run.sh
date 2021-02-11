@@ -17,12 +17,16 @@ downloadFile(){
   done
 }
 checkImageExist(){
-  echo ${VERSION}
+  echo "Checking if ${VERSION} exist"
   if [[ "$(docker images -q ${VERSION} 2> /dev/null)" == "" ]]; then
   echo "Building image"
   docker build . -t ${VERSION}
+  else
+    echo "${VERSION} already exist! If you changed somenthing on code please rebuild with docker file."
 fi
 }
+
+
 
 start_postgres() {
   echo "Starting postgres"
