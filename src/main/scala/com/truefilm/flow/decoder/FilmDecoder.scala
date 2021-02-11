@@ -29,7 +29,7 @@ object FilmDecoder extends RowDecoder[Film] {
           case Left(value) => Left(new DecoderError(s"Invalid value for Genres: ${cellList(GENRES_CELL)}"))
           case Right(value) =>Right(value = value)
         }
-        productionCompany <- CellDecoder[String].apply(cellList(PROD_CELL)) match {
+        productionCompanies <- CellDecoder[String].apply(cellList(PROD_CELL)) match {
           case Left(value) => Left(new DecoderError(s"Invalid value for Company: ${cellList(PROD_CELL)}"))
           case Right(value) =>Right(value = value)
         }
@@ -39,6 +39,6 @@ object FilmDecoder extends RowDecoder[Film] {
         }
         revenue <- if(cellList(REVENUE_CELL).isEmpty) Right(0d) else CellDecoder[Int].apply(cellList(REVENUE_CELL)).map(x => x.toDouble)
         rating <- if(cellList(RATING_CELL).isEmpty) Right(0d) else CellDecoder[Double].apply(cellList(RATING_CELL))
-      } yield Film(originalTitle,budget,year,revenue,rating,productionCompany,genres)
+      } yield Film(originalTitle,budget,year,revenue,rating,productionCompanies,genres)
     }
 }

@@ -5,7 +5,7 @@ CREATE TABLE topfilm (
 	revenue float4 NOT NULL,
 	rating float4 NOT NULL,
 	genres varchar NULL,
-	productioncompany varchar NULL,
+	productioncompanies varchar NULL,
 	wikilink varchar NULL,
 	wikiabstract varchar NULL,
 	ratio float4 NOT NULL
